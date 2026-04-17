@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Frequency — Podcast</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════
+   ROOT TOKENS
+═══════════════════════════════════ */
+:root {
+  --bg:       #0C0A09;
+  --bg2:      #141210;
+  --bg3:      #1C1916;
+  --bg4:      #242018;
+  --surface:  #201D19;
+  --amber:    #E8824A;
+  --amber2:   #F4A26A;
+  --amber3:   rgba(232,130,74,0.12);
+  --rose:     #C4956A;
+  --teal:     #4AC4A8;
+  --text1:    #F5EDE0;
+  --text2:    #9A8A76;
+  --text3:    #4E4236;
+  --border:   rgba(245,237,224,0.07);
+  --border2:  rgba(232,130,74,0.2);
+  --ff-disp:  'Playfair Display', Georgia, serif;
+  --ff-body:  'Syne', system-ui, sans-serif;
+  --ff-mono:  'JetBrains Mono', monospace;
+  --r:        4px;
+}
+
+/* ═══════════════════════════════════
+   RESET
+═══════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{
+  font-family:var(--ff-body);
+  background:var(--bg);
+  color:var(--text1);
+  overflow-x:hidden;
+  cursor:none;
+}
+a{color:inherit;text-decoration:none}
+button{font-family:var(--ff-body);border:none;cursor:none}
+img{display:block;max-width:100%}
+
+/* Grain texture */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity:.04;pointer-events:none;z-index:9990;
+}
+
+/* ═══════════════════════════════════
+   CUSTOM CURSOR
+═══════════════════════════════════ */
+#cur{
+  position:fixed;width:8px;height:8px;border-radius:50%;
+  background:var(--amber);pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);transition:width .2s,height .2s,opacity .2s;
+  mix-blend-mode:screen;
+}
+#cur.big{width:40px;height:40px;opacity:.3}
+#cur-trail{
+  position:fixed;width:32px;height:32px;border-radius:50%;
+  border:1px solid var(--amber);pointer-events:none;z-index:9997;
+  transform:translate(-50%,-50%);opacity:.35;
+  transition:left .1s,top .1s;
+}
+
+/* ═══════════════════════════════════
+   NAV
+═══════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  height:60px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 2.5rem;
+  background:rgba(12,10,9,.85);
+  backdrop-filter:blur(20px);
+  border-bottom:.5px solid var(--border);
+}
+.nav-logo{
+  display:flex;align-items:center;gap:.6rem;
+}
+.nav-logo-wave{
+  display:flex;align-items:center;gap:2px;height:18px;
+}
+.nav-logo-wave span{
+  width:2px;border-radius:2px;background:var(--amber);
+  animation:navwave 1.4s ease-in-out infinite;
+}
+.nav-logo-wave span:nth-child(1){height:6px;animation-delay:0s}
+.nav-logo-wave span:nth-child(2){height:14px;animation-delay:.15s}
+.nav-logo-wave span:nth-child(3){height:10px;animation-delay:.3s}
+.nav-logo-wave span:nth-child(4){height:18px;animation-delay:.45s}
+.nav-logo-wave span:nth-child(5){height:8px;animation-delay:.6s}
+@keyframes navwave{
+  0%,100%{transform:scaleY(1)}
+  50%{transform:scaleY(.4)}
+}
+.nav-brand{
+  font-family:var(--ff-disp);font-size:1.1rem;font-weight:700;
+  letter-spacing:.06em;color:var(--text1);
+}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{
+  font-size:.72rem;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text2);transition:color .2s;
+}
+.nav-links a:hover{color:var(--amber)}
+.nav-right{display:flex;align-items:center;gap:.75rem}
+.btn-subscribe{
+  padding:.42rem 1.1rem;
+  background:var(--amber);color:var(--bg);
+  font-family:var(--ff-body);font-size:.72rem;font-weight:600;
+  letter-spacing:.06em;border-radius:2px;
+  transition:all .2s;
+}
+.btn-subscribe:hover{background:var(--amber2);transform:translateY(-1px)}
+.nav-ham{
+  display:none;flex-direction:column;gap:5px;
+  background:transparent;padding:4px;
+}
+.nav-ham span{width:22px;height:1.5px;background:var(--text2);border-radius:2px;display:block;transition:all .3s}
+.mob-menu{
+  display:none;position:fixed;top:60px;left:0;right:0;
+  background:rgba(12,10,9,.97);backdrop-filter:blur(20px);
+  border-bottom:.5px solid var(--border);
+  padding:2rem;flex-direction:column;gap:1.5rem;z-index:499;
+}
+.mob-menu.open{display:flex}
+.mob-menu a{font-size:1rem;color:var(--text2);padding:.5rem 0;border-bottom:.5px solid var(--border)}
+
+/* ═══════════════════════════════════
+   HERO — LIVE WAVEFORM
+═══════════════════════════════════ */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;overflow:hidden;
+  padding:7rem 2.5rem 3rem;
+}
+/* Radial ambient */
+.hero::before{
+  content:'';position:absolute;
+  width:700px;height:700px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,130,74,.07) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none;animation:heroGlow 6s ease-in-out infinite;
+}
+@keyframes heroGlow{0%,100%{transform:translate(-50%,-50%) scale(.9);opacity:.6}50%{transform:translate(-50%,-50%) scale(1.1);opacity:1}}
+
+/* The waveform canvas */
+#waveCanvas{
+  position:absolute;bottom:0;left:0;right:0;
+  height:55%;pointer-events:none;z-index:0;opacity:.6;
+}
+
+.hero-inner{
+  position:relative;z-index:2;
+  max-width:1100px;margin:0 auto;width:100%;
+}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-family:var(--ff-mono);font-size:.62rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--amber);
+  border:.5px solid var(--border2);border-radius:2px;
+  padding:.28rem .8rem;margin-bottom:2rem;
+  animation:fadeSlide .8s .1s ease both;
+}
+.hero-tag-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--amber);
+  animation:dotBlink 1.6s ease-in-out infinite;
+}
+@keyframes dotBlink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+
+.hero-h1{
+  font-family:var(--ff-disp);
+  font-size:clamp(3.2rem,7vw,6.5rem);
+  font-weight:900;line-height:.97;
+  letter-spacing:-.03em;
+  margin-bottom:1.5rem;
+  animation:fadeSlide .8s .18s ease both;
+}
+.hero-h1 em{
+  font-style:italic;color:var(--amber);display:block;
+}
+.hero-h1 .outline{
+  -webkit-text-stroke:1px var(--text3);
+  color:transparent;
+}
+.hero-sub{
+  font-size:1.05rem;font-weight:400;line-height:1.75;
+  color:var(--text2);max-width:480px;margin-bottom:2.5rem;
+  animation:fadeSlide .8s .26s ease both;
+}
+.hero-actions{
+  display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:3rem;
+  animation:fadeSlide .8s .34s ease both;
+}
+.btn-play-hero{
+  display:flex;align-items:center;gap:.7rem;
+  padding:.85rem 1.8rem;
+  background:var(--amber);color:var(--bg);
+  font-size:.85rem;font-weight:600;
+  border-radius:2px;transition:all .25s;
+}
+.btn-play-hero:hover{background:var(--amber2);transform:translateY(-2px)}
+.play-icon{
+  width:20px;height:20px;border-radius:50%;
+  border:1.5px solid var(--bg);
+  display:flex;align-items:center;justify-content:center;
+}
+.play-tri{
+  width:0;height:0;
+  border-top:4px solid transparent;
+  border-bottom:4px solid transparent;
+  border-left:7px solid var(--bg);
+  margin-left:1px;
+}
+.btn-eps{
+  padding:.85rem 1.8rem;
+  background:transparent;color:var(--text2);
+  font-size:.85rem;font-weight:500;
+  border:.5px solid var(--border);border-radius:2px;
+  transition:all .25s;
+}
+.btn-eps:hover{border-color:var(--border2);color:var(--text1)}
+
+/* Live stats strip */
+.hero-stats{
+  display:flex;gap:2.5rem;align-items:center;flex-wrap:wrap;
+  animation:fadeSlide .8s .42s ease both;
+}
+.h-stat{text-align:left}
+.h-stat-n{
+  font-family:var(--ff-disp);font-size:1.6rem;font-weight:700;
+  color:var(--amber);line-height:1;
+}
+.h-stat-l{
+  font-family:var(--ff-mono);font-size:.58rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--text3);margin-top:3px;
+}
+.stat-divider{width:.5px;height:32px;background:var(--border)}
+
+/* Interactive waveform hero bars */
+#heroWave{
+  position:absolute;bottom:0;left:0;right:0;height:180px;
+  display:flex;align-items:flex-end;gap:2px;
+  padding:0 0 0 0;z-index:1;pointer-events:none;overflow:hidden;
+}
+.hw-bar{
+  flex:1;min-width:3px;border-radius:2px 2px 0 0;
+  background:linear-gradient(180deg,var(--amber) 0%,rgba(232,130,74,0) 100%);
+  transition:height .08s ease;
+  opacity:.35;
+}
+
+@keyframes fadeSlide{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════════════════════════════════
+   LATEST EPISODE — BIG FEATURE
+═══════════════════════════════════ */
+.latest{
+  background:var(--bg2);
+  padding:5rem 2.5rem;
+  position:relative;overflow:hidden;
+}
+.latest::before{
+  content:'EP.047';
+  position:absolute;right:-2rem;top:50%;transform:translateY(-50%);
+  font-family:var(--ff-disp);font-size:14rem;font-weight:900;
+  color:rgba(232,130,74,.04);line-height:1;white-space:nowrap;
+  pointer-events:none;user-select:none;
+}
+.latest-inner{max-width:1100px;margin:0 auto}
+.sec-ey{
+  display:inline-flex;align-items:center;gap:.8rem;
+  font-family:var(--ff-mono);font-size:.6rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--amber);margin-bottom:1.2rem;
+}
+.sec-ey::before{content:'';width:22px;height:.5px;background:var(--amber)}
+.latest-card{
+  display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;
+  margin-top:2.5rem;
+}
+/* Episode cover art */
+.ep-cover{
+  aspect-ratio:1;
+  background:var(--bg3);
+  border:.5px solid var(--border);
+  border-radius:var(--r);
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.ep-cover-art{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+}
+/* Animated concentric rings */
+.cover-rings{
+  position:relative;width:200px;height:200px;
+  display:flex;align-items:center;justify-content:center;
+}
+.c-ring{
+  position:absolute;border-radius:50%;
+  border:.5px solid var(--amber);
+  animation:ringPulse 3s ease-in-out infinite;
+}
+.c-ring:nth-child(1){width:60px;height:60px;opacity:.9;animation-delay:0s}
+.c-ring:nth-child(2){width:100px;height:100px;opacity:.5;animation-delay:.4s}
+.c-ring:nth-child(3){width:140px;height:140px;opacity:.3;animation-delay:.8s}
+.c-ring:nth-child(4){width:180px;height:180px;opacity:.15;animation-delay:1.2s}
+.c-ring:nth-child(5){width:220px;height:220px;opacity:.07;animation-delay:1.6s}
+@keyframes ringPulse{0%,100%{transform:scale(1);opacity:var(--op,.5)}50%{transform:scale(1.05)}}
+.cover-center{
+  position:relative;z-index:2;
+  width:52px;height:52px;border-radius:50%;
+  background:var(--amber);
+  display:flex;align-items:center;justify-content:center;
+  cursor:none;transition:transform .2s;
+}
+.cover-center:hover{transform:scale(1.1)}
+.cover-tri{
+  width:0;height:0;
+  border-top:9px solid transparent;
+  border-bottom:9px solid transparent;
+  border-left:16px solid var(--bg);
+  margin-left:3px;
+}
+.ep-now-badge{
+  position:absolute;top:1rem;left:1rem;
+  font-family:var(--ff-mono);font-size:.58rem;letter-spacing:.1em;
+  padding:.25rem .7rem;border-radius:2px;
+  background:rgba(74,196,168,.12);border:.5px solid rgba(74,196,168,.3);
+  color:var(--teal);text-transform:uppercase;
+  display:flex;align-items:center;gap:.4rem;
+}
+.ep-now-dot{width:5px;height:5px;border-radius:50%;background:var(--teal);animation:dotBlink 1.2s ease-in-out infinite}
+.ep-waveform{
+  position:absolute;bottom:0;left:0;right:0;height:50px;
+  display:flex;align-items:flex-end;gap:2px;padding:0 1rem;overflow:hidden;
+}
+.epw-bar{
+  flex:1;border-radius:2px 2px 0 0;
+  background:var(--amber);opacity:.2;
+  animation:epwAnim 1.8s ease-in-out infinite;
+}
+@keyframes epwAnim{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.3)}}
+
+/* Episode info */
+.ep-meta{font-family:var(--ff-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:.75rem}
+.ep-title{
+  font-family:var(--ff-disp);font-size:clamp(1.6rem,3vw,2.5rem);
+  font-weight:700;line-height:1.12;letter-spacing:-.02em;
+  color:var(--text1);margin-bottom:1rem;
+}
+.ep-title em{font-style:italic;color:var(--amber)}
+.ep-desc{font-size:.9rem;font-weight:400;line-height:1.75;color:var(--text2);margin-bottom:1.75rem}
+.ep-guest{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.9rem;
+  background:var(--bg3);border:.5px solid var(--border);border-radius:var(--r);
+  margin-bottom:1.5rem;
+}
+.guest-av{
+  width:42px;height:42px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--ff-disp);font-size:.85rem;font-weight:700;
+  color:var(--bg);
+}
+.guest-name{font-size:.88rem;font-weight:600;color:var(--text1)}
+.guest-role{font-size:.72rem;color:var(--text3);margin-top:2px}
+/* Time oracle */
+.time-oracle{
+  display:flex;align-items:flex-start;gap:.75rem;
+  padding:.9rem 1rem;
+  background:var(--amber3);border:.5px solid var(--border2);border-radius:var(--r);
+  margin-bottom:1.5rem;
+}
+.oracle-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+.oracle-title{font-family:var(--ff-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);margin-bottom:.3rem}
+.oracle-items{display:flex;flex-wrap:wrap;gap:.4rem}
+.oracle-item{
+  font-size:.72rem;color:var(--text2);
+  padding:.15rem .5rem;border-radius:2px;
+  background:rgba(232,130,74,.08);border:.5px solid rgba(232,130,74,.12);
+}
+.ep-actions{display:flex;gap:.75rem;flex-wrap:wrap}
+.btn-listen{
+  display:flex;align-items:center;gap:.5rem;
+  padding:.75rem 1.5rem;background:var(--amber);color:var(--bg);
+  font-size:.82rem;font-weight:600;border-radius:2px;transition:all .2s;
+}
+.btn-listen:hover{background:var(--amber2);transform:translateY(-1px)}
+.btn-share{
+  padding:.75rem 1.5rem;background:transparent;
+  color:var(--text2);font-size:.82rem;
+  border:.5px solid var(--border);border-radius:2px;transition:all .2s;
+}
+.btn-share:hover{border-color:var(--border2);color:var(--text1)}
+
+/* ═══════════════════════════════════
+   MOOD FILTER — THE UNIQUE DIAL
+═══════════════════════════════════ */
+.mood-strip{
+  background:var(--bg);
+  padding:4rem 2.5rem;
+  border-top:.5px solid var(--border);border-bottom:.5px solid var(--border);
+}
+.mood-inner{max-width:1100px;margin:0 auto}
+.mood-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;margin-bottom:2rem}
+.mood-title{font-family:var(--ff-disp);font-size:1.4rem;font-weight:700;color:var(--text1)}
+.mood-title em{font-style:italic;color:var(--amber)}
+.mood-dials{display:flex;gap:.75rem;flex-wrap:wrap}
+.mood-btn{
+  display:flex;align-items:center;gap:.5rem;
+  padding:.5rem 1.1rem;
+  background:var(--bg3);border:.5px solid var(--border);border-radius:99px;
+  font-size:.78rem;font-weight:500;color:var(--text2);
+  transition:all .25s;position:relative;overflow:hidden;
+}
+.mood-btn::before{
+  content:'';position:absolute;inset:0;
+  background:var(--amber3);opacity:0;transition:opacity .25s;
+}
+.mood-btn:hover::before,.mood-btn.active::before{opacity:1}
+.mood-btn:hover,.mood-btn.active{border-color:var(--border2);color:var(--amber)}
+.mood-btn .mood-emoji{font-size:1rem}
+.mood-count{
+  font-family:var(--ff-mono);font-size:.58rem;
+  background:rgba(232,130,74,.12);color:var(--amber);
+  padding:.1rem .4rem;border-radius:3px;
+}
+
+/* ═══════════════════════════════════
+   EPISODES GRID
+═══════════════════════════════════ */
+.episodes{background:var(--bg);padding:2rem 2.5rem 5rem}
+.episodes-inner{max-width:1100px;margin:0 auto}
+.eps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.ep-card{
+  background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);
+  overflow:hidden;transition:all .3s;cursor:none;
+  display:flex;flex-direction:column;
+}
+.ep-card:hover{border-color:var(--border2);transform:translateY(-4px);box-shadow:0 20px 48px rgba(0,0,0,.4)}
+.ep-card-top{
+  height:10px;position:relative;overflow:hidden;
+}
+.ep-card-line{
+  position:absolute;inset:0;
+  display:flex;align-items:center;gap:1px;padding:0 .5rem;
+}
+.ecl-bar{flex:1;border-radius:2px;transition:height .3s}
+.ep-card:hover .ecl-bar{height:100%!important}
+.ep-card-body{padding:1.25rem;flex:1;display:flex;flex-direction:column}
+.ep-card-num{
+  font-family:var(--ff-mono);font-size:.58rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--text3);margin-bottom:.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.ep-card-mood{
+  display:flex;align-items:center;gap:.25rem;
+  font-size:.6rem;padding:.15rem .5rem;border-radius:2px;
+}
+.ep-card-title{
+  font-family:var(--ff-disp);font-size:1rem;font-weight:700;
+  color:var(--text1);line-height:1.25;margin-bottom:.5rem;letter-spacing:-.01em;
+}
+.ep-card-guest{font-size:.75rem;color:var(--text3);margin-bottom:.75rem}
+.ep-card-desc{font-size:.78rem;color:var(--text2);line-height:1.65;flex:1;margin-bottom:1rem}
+.ep-card-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:.8rem;border-top:.5px solid var(--border);
+}
+.ep-card-time{
+  font-family:var(--ff-mono);font-size:.65rem;color:var(--text3);
+  display:flex;align-items:center;gap:.4rem;
+}
+.ep-card-play{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--amber3);border:.5px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.ep-card:hover .ep-card-play{background:var(--amber)}
+.ep-card:hover .ep-card-play .mini-tri{border-left-color:var(--bg)}
+.mini-tri{width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:7px solid var(--amber);margin-left:2px}
+.ep-card:hover .mini-tri{border-left-color:var(--bg)}
+
+/* ═══════════════════════════════════
+   GUEST CONSTELLATION
+═══════════════════════════════════ */
+.constellation{
+  background:var(--bg2);padding:5rem 2.5rem;
+  position:relative;overflow:hidden;
+}
+.constellation-inner{max-width:1100px;margin:0 auto}
+.const-wrap{
+  display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;margin-top:2.5rem;
+}
+#starMap{
+  width:100%;aspect-ratio:1;border:.5px solid var(--border);border-radius:var(--r);
+  background:var(--bg);position:relative;overflow:hidden;
+}
+.star-svg{width:100%;height:100%}
+.const-right{}
+.const-title{
+  font-family:var(--ff-disp);
+  font-size:clamp(1.8rem,3vw,2.6rem);font-weight:700;
+  line-height:1.1;letter-spacing:-.02em;color:var(--text1);margin-bottom:.75rem;
+}
+.const-title em{font-style:italic;color:var(--amber)}
+.const-sub{font-size:.9rem;line-height:1.75;color:var(--text2);margin-bottom:2rem}
+.guest-list{display:flex;flex-direction:column;gap:.6rem}
+.guest-row{
+  display:flex;align-items:center;gap:.9rem;
+  padding:.8rem 1rem;background:var(--bg3);border:.5px solid var(--border);border-radius:var(--r);
+  transition:all .25s;cursor:none;
+}
+.guest-row:hover{border-color:var(--border2);transform:translateX(4px)}
+.guest-row-av{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--ff-disp);font-size:.75rem;font-weight:700;color:var(--bg);
+}
+.guest-row-info{flex:1}
+.guest-row-name{font-size:.85rem;font-weight:600;color:var(--text1)}
+.guest-row-ep{font-family:var(--ff-mono);font-size:.58rem;color:var(--text3);margin-top:2px;letter-spacing:.08em}
+.guest-eps-count{
+  font-family:var(--ff-mono);font-size:.62rem;
+  background:var(--amber3);border:.5px solid var(--border2);
+  color:var(--amber);padding:.2rem .5rem;border-radius:3px;
+}
+
+/* ═══════════════════════════════════
+   NEWSLETTER / CTA
+═══════════════════════════════════ */
+.cta-section{
+  background:var(--bg);padding:6rem 2.5rem;
+  position:relative;overflow:hidden;
+}
+.cta-section::before{
+  content:'';position:absolute;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,130,74,.06) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+.cta-inner{max-width:600px;margin:0 auto;text-align:center;position:relative;z-index:2}
+.cta-title{
+  font-family:var(--ff-disp);font-size:clamp(2rem,4vw,3.2rem);
+  font-weight:700;line-height:1.1;letter-spacing:-.02em;
+  color:var(--text1);margin-bottom:1rem;
+}
+.cta-title em{font-style:italic;color:var(--amber)}
+.cta-sub{font-size:.95rem;line-height:1.75;color:var(--text2);margin-bottom:2.5rem}
+.cta-form{
+  display:flex;gap:0;max-width:420px;margin:0 auto;
+  border:.5px solid var(--border);border-radius:3px;overflow:hidden;
+  background:var(--surface);transition:border-color .25s;
+}
+.cta-form:focus-within{border-color:var(--border2)}
+.cta-input{
+  flex:1;padding:.85rem 1.2rem;background:transparent;border:none;
+  font-family:var(--ff-body);font-size:.85rem;color:var(--text1);outline:none;
+}
+.cta-input::placeholder{color:var(--text3)}
+.cta-submit{
+  padding:.85rem 1.4rem;background:var(--amber);
+  color:var(--bg);font-size:.78rem;font-weight:600;
+  border:none;transition:background .2s;cursor:none;
+}
+.cta-submit:hover{background:var(--amber2)}
+.cta-note{font-family:var(--ff-mono);font-size:.6rem;color:var(--text3);margin-top:1rem;letter-spacing:.06em}
+
+/* Platforms */
+.platforms{display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;margin-top:3rem;align-items:center}
+.plat-label{font-family:var(--ff-mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text3)}
+.plat-link{
+  display:flex;align-items:center;gap:.4rem;
+  padding:.4rem .9rem;border:.5px solid var(--border);border-radius:2px;
+  font-size:.72rem;color:var(--text2);transition:all .2s;
+}
+.plat-link:hover{border-color:var(--border2);color:var(--amber)}
+
+/* ═══════════════════════════════════
+   PERSISTENT BOTTOM PLAYER
+═══════════════════════════════════ */
+#player{
+  position:fixed;bottom:0;left:0;right:0;z-index:400;
+  background:rgba(12,10,9,.97);
+  backdrop-filter:blur(20px);
+  border-top:.5px solid var(--border);
+  padding:.85rem 2.5rem;
+  display:flex;align-items:center;gap:1.5rem;
+  transform:translateY(100%);
+  transition:transform .4s cubic-bezier(.32,.72,0,1);
+}
+#player.show{transform:translateY(0)}
+.player-ep{display:flex;align-items:center;gap:.75rem;min-width:0;flex:0 0 220px}
+.player-disk{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--amber) 0%,var(--rose) 100%);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  animation:diskSpin 6s linear infinite paused;
+}
+#player.playing .player-disk{animation-play-state:running}
+@keyframes diskSpin{to{transform:rotate(360deg)}}
+.disk-hole{width:10px;height:10px;border-radius:50%;background:var(--bg)}
+.player-ep-name{font-size:.75rem;font-weight:600;color:var(--text1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-ep-guest{font-size:.62rem;color:var(--text3)}
+/* Player waveform */
+.player-wave{
+  flex:1;height:32px;
+  display:flex;align-items:center;gap:2px;
+  overflow:hidden;cursor:none;
+}
+.pw-bar{
+  flex:1;min-width:2px;max-width:4px;border-radius:2px;
+  background:var(--amber);opacity:.2;
+  transition:height .1s ease;
+  animation:pwAnim 1.2s ease-in-out infinite;
+}
+#player.playing .pw-bar{opacity:.5}
+@keyframes pwAnim{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.25)}}
+/* Progress */
+.player-progress{display:flex;align-items:center;gap:.75rem;flex:0 0 160px}
+.player-time{font-family:var(--ff-mono);font-size:.62rem;color:var(--text3)}
+.prog-bar{
+  flex:1;height:2px;background:var(--bg4);border-radius:2px;position:relative;cursor:none;
+}
+.prog-fill{height:100%;background:var(--amber);border-radius:2px;width:35%;transition:width .5s linear}
+/* Controls */
+.player-controls{display:flex;align-items:center;gap:.75rem;flex-shrink:0}
+.ctrl-btn{
+  width:30px;height:30px;border-radius:50%;
+  background:transparent;border:.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;color:var(--text2);transition:all .2s;
+}
+.ctrl-btn:hover{border-color:var(--border2);color:var(--amber)}
+.ctrl-play{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--amber);border:none;color:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.ctrl-play:hover{background:var(--amber2);transform:scale(1.05)}
+.player-close{
+  background:transparent;border:none;color:var(--text3);font-size:1rem;
+  padding:.25rem;transition:color .2s;flex-shrink:0;
+}
+.player-close:hover{color:var(--text1)}
+
+/* ═══════════════════════════════════
+   FOOTER
+═══════════════════════════════════ */
+footer{
+  background:var(--bg2);border-top:.5px solid var(--border);
+  padding:3rem 2.5rem 5rem;/* extra bottom for player */
+}
+.foot-inner{
+  max-width:1100px;margin:0 auto;
+  display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:3rem;
+}
+.foot-brand-name{
+  font-family:var(--ff-disp);font-size:1.3rem;font-weight:900;
+  font-style:italic;color:var(--text1);margin-bottom:.6rem;
+}
+.foot-brand-name span{color:var(--amber)}
+.foot-desc{font-size:.8rem;line-height:1.7;color:var(--text2);max-width:230px}
+.foot-col-h{
+  font-family:var(--ff-mono);font-size:.58rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--text3);margin-bottom:1rem;
+}
+.foot-links{list-style:none;display:flex;flex-direction:column;gap:.55rem}
+.foot-links a{font-size:.8rem;color:var(--text2);transition:color .2s}
+.foot-links a:hover{color:var(--amber)}
+.foot-bottom{
+  max-width:1100px;margin:2rem auto 0;
+  padding-top:1.5rem;border-top:.5px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;
+}
+.foot-copy{font-family:var(--ff-mono);font-size:.6rem;color:var(--text3)}
+
+/* ═══════════════════════════════════
+   UTILS
+═══════════════════════════════════ */
+.sec-title{
+  font-family:var(--ff-disp);font-size:clamp(1.8rem,3.2vw,2.8rem);
+  font-weight:700;line-height:1.1;letter-spacing:-.02em;color:var(--text1);
+}
+.sec-title em{font-style:italic;color:var(--amber)}
+.sec-sub{font-size:.9rem;line-height:1.75;color:var(--text2);margin-top:.75rem;max-width:460px}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .65s ease,transform .65s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ═══════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════ */
+@media(max-width:1024px){
+  .latest-card,.const-wrap{grid-template-columns:1fr;gap:2.5rem}
+  .eps-grid{grid-template-columns:repeat(2,1fr)}
+  .foot-inner{grid-template-columns:1fr 1fr;gap:2rem}
+}
+@media(max-width:768px){
+  nav{padding:0 1.25rem}
+  .nav-links,.nav-right{display:none}
+  .nav-ham{display:flex}
+  .hero{padding:5rem 1.25rem 2rem}
+  .hero-h1{font-size:clamp(2.5rem,10vw,4rem)}
+  .latest,.constellation,.cta-section,.episodes{padding-left:1.25rem;padding-right:1.25rem}
+  .mood-strip{padding:3rem 1.25rem}
+  .eps-grid{grid-template-columns:1fr}
+  .foot-inner{grid-template-columns:1fr}
+  .foot-bottom{flex-direction:column;align-items:flex-start}
+  #player{padding:.75rem 1.25rem;gap:1rem}
+  .player-ep{flex:0 0 auto;min-width:130px}
+  .player-progress{display:none}
+  #cursor,#cur-trail{display:none}
+  body{cursor:auto}
+  button,a{cursor:pointer}
+  .hero-stats{gap:1.5rem}
+  .cta-form{flex-direction:column}
+  .cta-submit{border-radius:0;border-top:.5px solid var(--border)}
+}
+@media(max-width:480px){
+  .hero-actions{flex-direction:column}
+  .btn-play-hero,.btn-eps{width:100%;justify-content:center;text-align:center}
+  .stat-divider{display:none}
+  .hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  .player-wave{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div id="cur"></div>
+<div id="cur-trail"></div>
+
+<!-- ════════════ NAV ════════════ -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-wave">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <span class="nav-brand">The Frequency</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#episodes">Episodes</a></li>
+    <li><a href="#guests">Guests</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="btn-subscribe" onclick="showPlayer()">▶ Listen Now</button>
+  </div>
+  <button class="nav-ham" id="navHam"><span></span><span></span><span></span></button>
+</nav>
+<div class="mob-menu" id="mobMenu">
+  <a href="#episodes">Episodes</a>
+  <a href="#guests">Guests</a>
+  <a href="#about">About</a>
+  <button class="btn-subscribe" style="width:100%;padding:.75rem;border-radius:2px;margin-top:.5rem" onclick="showPlayer()">▶ Listen Now</button>
+</div>
+
+<!-- ════════════ HERO ════════════ -->
+<section class="hero" id="heroSec">
+  <!-- Interactive waveform bars -->
+  <div id="heroWave"></div>
+
+  <div class="hero-inner">
+    <div class="hero-tag">
+      <span class="hero-tag-dot"></span>
+      New Episode Every Tuesday
+    </div>
+    <h1 class="hero-h1">
+      <span class="outline">Ideas</span> Worth<br>
+      <em>Hearing Out Loud</em>
+    </h1>
+    <p class="hero-sub">Deep conversations with the minds reshaping technology, culture, and the human experience — no fluff, no fillers, just signal.</p>
+    <div class="hero-actions">
+      <button class="btn-play-hero" onclick="showPlayer()">
+        <span class="play-icon"><span class="play-tri"></span></span>
+        Play Latest Episode
+      </button>
+      <a href="#episodes" class="btn-eps">Browse All 47 Episodes</a>
+    </div>
+    <div class="hero-stats">
+      <div class="h-stat">
+        <div class="h-stat-n" id="hc1">0</div>
+        <div class="h-stat-l">Listeners / Week</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="h-stat">
+        <div class="h-stat-n" id="hc2">0</div>
+        <div class="h-stat-l">Episodes Published</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="h-stat">
+        <div class="h-stat-n" id="hc3">0</div>
+        <div class="h-stat-l">Countries Tuned In</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="h-stat">
+        <div class="h-stat-n">⭐ <span id="hc4">0</span></div>
+        <div class="h-stat-l">Avg. Rating</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ LATEST EPISODE ════════════ -->
+<section class="latest">
+  <div class="latest-inner">
+    <div class="sec-ey reveal">Latest Release</div>
+    <div class="latest-card">
+      <!-- Cover -->
+      <div class="ep-cover reveal">
+        <div class="ep-cover-art">
+          <div class="cover-rings">
+            <div class="c-ring"></div><div class="c-ring"></div>
+            <div class="c-ring"></div><div class="c-ring"></div><div class="c-ring"></div>
+            <button class="cover-center" onclick="showPlayer()"><span class="cover-tri"></span></button>
+          </div>
+        </div>
+        <div class="ep-now-badge"><span class="ep-now-dot"></span>New · Ep. 047</div>
+        <div class="ep-waveform" id="epWave"></div>
+      </div>
+      <!-- Info -->
+      <div class="reveal" style="transition-delay:.12s">
+        <div class="ep-meta">Episode 047 · 62 min · April 14, 2026</div>
+        <h2 class="ep-title">The Algorithm That <em>Reads Your Mind</em> Before You Do</h2>
+        <p class="ep-desc">We sit down with Dr. Leila Hassan — AI Ethics lead at DeepMind — to unpack the uncomfortable truth about predictive systems, consent architecture, and why the real danger isn't what AI can do, but what we're willing to let it.</p>
+
+        <!-- Guest -->
+        <div class="ep-guest">
+          <div class="guest-av" style="background:linear-gradient(135deg,#E8824A,#C4956A)">LH</div>
+          <div>
+            <div class="guest-name">Dr. Leila Hassan</div>
+            <div class="guest-role">AI Ethics Lead · DeepMind, London</div>
+          </div>
+        </div>
+
+        <!-- TIME ORACLE — the unique engagement hook -->
+        <div class="time-oracle">
+          <div class="oracle-icon">⏱</div>
+          <div>
+            <div class="oracle-title">In 62 minutes you could also…</div>
+            <div class="oracle-items">
+              <span class="oracle-item">Read 25 pages</span>
+              <span class="oracle-item">Walk 5.2 km</span>
+              <span class="oracle-item">Cook dinner twice</span>
+              <span class="oracle-item">Brew 12 coffees ☕</span>
+              <span class="oracle-item">Nap (& miss this)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ep-actions">
+          <button class="btn-listen" onclick="showPlayer()">
+            <span class="play-icon" style="border-color:var(--bg)"><span class="play-tri"></span></span>
+            Listen Now
+          </button>
+          <button class="btn-share" onclick="this.textContent='✓ Copied!'">Share Episode</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ MOOD FILTER ════════════ -->
+<div class="mood-strip" id="episodes">
+  <div class="mood-inner">
+    <div class="mood-header reveal">
+      <div class="mood-title">Filter by <em>How You Feel</em></div>
+      <div class="mood-dials">
+        <button class="mood-btn active" onclick="setMood(this,'all')">
+          <span class="mood-emoji">🎯</span> All Episodes
+          <span class="mood-count">47</span>
+        </button>
+        <button class="mood-btn" onclick="setMood(this,'curious')">
+          <span class="mood-emoji">🔍</span> Curious
+          <span class="mood-count">18</span>
+        </button>
+        <button class="mood-btn" onclick="setMood(this,'inspired')">
+          <span class="mood-emoji">⚡</span> Inspired
+          <span class="mood-count">14</span>
+        </button>
+        <button class="mood-btn" onclick="setMood(this,'challenged')">
+          <span class="mood-emoji">🧠</span> Challenged
+          <span class="mood-count">9</span>
+        </button>
+        <button class="mood-btn" onclick="setMood(this,'unwinding')">
+          <span class="mood-emoji">🌿</span> Unwinding
+          <span class="mood-count">6</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ EPISODES GRID ════════════ -->
+<div class="episodes">
+  <div class="episodes-inner">
+    <div class="eps-grid" id="epsGrid">
+
+      <!-- ep 046 -->
+      <div class="ep-card reveal" data-mood="curious">
+        <div class="ep-card-top" style="background:linear-gradient(90deg,#E8824A22,#E8824A11)">
+          <div class="ep-card-line" id="ecl0"></div>
+        </div>
+        <div class="ep-card-body">
+          <div class="ep-card-num">
+            EP. 046 · 54 min
+            <span class="ep-card-mood" style="background:rgba(232,130,74,.1);color:var(--amber);border:.5px solid rgba(232,130,74,.2)">🔍 Curious</span>
+          </div>
+          <div class="ep-card-title">The Loneliness Epidemic Nobody's Talking About</div>
+          <div class="ep-card-guest">with Dr. Omar Farouk · Social Psychologist</div>
+          <div class="ep-card-desc">Why remote work didn't cause loneliness — it just made it impossible to ignore. A raw, data-rich conversation about human connection in the digital age.</div>
+          <div class="ep-card-footer">
+            <div class="ep-card-time">▸ Apr 7</div>
+            <button class="ep-card-play" onclick="showPlayer()">
+              <div class="mini-tri"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ep 045 -->
+      <div class="ep-card reveal" data-mood="inspired" style="transition-delay:.08s">
+        <div class="ep-card-top" style="background:linear-gradient(90deg,#4AC4A822,#4AC4A811)">
+          <div class="ep-card-line" id="ecl1"></div>
+        </div>
+        <div class="ep-card-body">
+          <div class="ep-card-num">
+            EP. 045 · 71 min
+            <span class="ep-card-mood" style="background:rgba(74,196,168,.08);color:var(--teal);border:.5px solid rgba(74,196,168,.2)">⚡ Inspired</span>
+          </div>
+          <div class="ep-card-title">Building a $1B Company While Living in a Van</div>
+          <div class="ep-card-guest">with Mia Andersen · Founder, NomadStack</div>
+          <div class="ep-card-desc">How intentional constraints breed radical creativity. Mia built a SaaS empire from a converted Sprinter. This episode will rewire how you think about ambition.</div>
+          <div class="ep-card-footer">
+            <div class="ep-card-time">▸ Mar 31</div>
+            <button class="ep-card-play" onclick="showPlayer()">
+              <div class="mini-tri"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ep 044 -->
+      <div class="ep-card reveal" data-mood="challenged" style="transition-delay:.16s">
+        <div class="ep-card-top" style="background:linear-gradient(90deg,#C4956A22,#C4956A11)">
+          <div class="ep-card-line" id="ecl2"></div>
+        </div>
+        <div class="ep-card-body">
+          <div class="ep-card-num">
+            EP. 044 · 88 min
+            <span class="ep-card-mood" style="background:rgba(196,149,106,.1);color:var(--rose);border:.5px solid rgba(196,149,106,.25)">🧠 Challenged</span>
+          </div>
+          <div class="ep-card-title">Is Free Will a Story We Tell Ourselves?</div>
+          <div class="ep-card-guest">with Prof. Yuki Tanaka · Cognitive Neuroscientist</div>
+          <div class="ep-card-desc">Neuroscience says your "decisions" are made 7 seconds before you're aware of them. So what does that mean for responsibility, law, and identity?</div>
+          <div class="ep-card-footer">
+            <div class="ep-card-time">▸ Mar 24</div>
+            <button class="ep-card-play" onclick="showPlayer()">
+              <div class="mini-tri"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ep 043 -->
+      <div class="ep-card reveal" data-mood="inspired" style="transition-delay:.08s">
+        <div class="ep-card-top" style="background:linear-gradient(90deg,#4AC4A822,#4AC4A811)">
+          <div class="ep-card-line" id="ecl3"></div>
+        </div>
+        <div class="ep-card-body">
+          <div class="ep-card-num">
+            EP. 043 · 49 min
+            <span class="ep-card-mood" style="background:rgba(74,196,168,.08);color:var(--teal);border:.5px solid rgba(74,196,168,.2)">⚡ Inspired</span>
+          </div>
+          <div class="ep-card-title">The Chef Who Taught Michelin Stars to Cry</div>
+          <div class="ep-card-guest">with Chef Adaora Nwosu · 3-Star, Lagos & Paris</div>
+          <div class="ep-card-desc">On grief, memory, and why the best meals are always about something else entirely. One of our most emotional episodes yet.</div>
+          <div class="ep-card-footer">
+            <div class="ep-card-time">▸ Mar 17</div>
+            <button class="ep-card-play" onclick="showPlayer()">
+              <div class="mini-tri"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ep 042 -->
+      <div class="ep-card reveal" data-mood="curious" style="transition-delay:.16s">
+        <div class="ep-card-top" style="background:linear-gradient(90deg,#E8824A22,#E8824A11)">
+          <div class="ep-card-line" id="ecl4"></div>
+        </div>
+        <div class="ep-card-body">
+          <div class="ep-card-num">
+            EP. 042 · 66 min
+            <span class="ep-card-mood" style="background:rgba(232,130,74,.1);color:var(--amber);border:.5px solid rgba(232,130,74,.2)">🔍 Curious</span>
+          </div>
+          <div class="ep-card-title">Why Your City Is Designed to Make You Anxious</div>
+          <div class="ep-card-guest">with Zara Okonkwo · Urban Designer, UN Habitat</div>
+          <div class="ep-card-desc">Highways, parking lots, and the suburban sprawl are not accidents. They were choices — and we're all living (and struggling) inside their consequences.</div>
+          <div class="ep-card-footer">
+            <div class="ep-card-time">▸ Mar 10</div>
+            <button class="ep-card-play" onclick="showPlayer()">
+              <div class="mini-tri"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ep 041 -->
+      <div class="ep-card reveal" data-mood="unwinding" style="transition-delay:.24s">
+        <div class="ep-card-top" style="background:linear-gradient(90deg,#A0B87822,#A0B87811)">
+          <div class="ep-card-line" id="ecl5"></div>
+        </div>
+        <div class="ep-card-body">
+          <div class="ep-card-num">
+            EP. 041 · 38 min
+            <span class="ep-card-mood" style="background:rgba(160,184,120,.08);color:#A0B878;border:.5px solid rgba(160,184,120,.2)">🌿 Unwinding</span>
+          </div>
+          <div class="ep-card-title">A Conversation About Nothing in Particular</div>
+          <div class="ep-card-guest">with James Okello · Jazz Pianist</div>
+          <div class="ep-card-desc">No agenda. No talking points. Just James, his piano, and a long conversation about slowness, beauty, and the lost art of doing nothing well.</div>
+          <div class="ep-card-footer">
+            <div class="ep-card-time">▸ Mar 3</div>
+            <button class="ep-card-play" onclick="showPlayer()">
+              <div class="mini-tri"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="text-align:center;margin-top:3rem" class="reveal">
+      <button class="btn-eps" style="padding:.9rem 2.5rem;font-size:.88rem">Load More Episodes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ GUEST CONSTELLATION ════════════ -->
+<section class="constellation" id="guests">
+  <div class="constellation-inner">
+    <div class="reveal">
+      <div class="sec-ey">The Voices</div>
+      <h2 class="sec-title">Guest <em>Constellation</em></h2>
+      <p class="sec-sub">Every dot is a conversation. Every line is a shared idea. Hover to explore the connections between our guests.</p>
+    </div>
+    <div class="const-wrap">
+      <!-- Star map SVG -->
+      <div id="starMap" class="reveal">
+        <svg class="star-svg" id="starSvg" viewBox="0 0 400 400">
+          <defs>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+              <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Lines connecting guests -->
+          <line x1="200" y1="200" x2="120" y2="80"  stroke="rgba(232,130,74,.15)" stroke-width="1"/>
+          <line x1="200" y1="200" x2="300" y2="100" stroke="rgba(232,130,74,.15)" stroke-width="1"/>
+          <line x1="200" y1="200" x2="340" y2="260" stroke="rgba(232,130,74,.15)" stroke-width="1"/>
+          <line x1="200" y1="200" x2="80"  y2="290" stroke="rgba(232,130,74,.15)" stroke-width="1"/>
+          <line x1="200" y1="200" x2="180" y2="340" stroke="rgba(232,130,74,.15)" stroke-width="1"/>
+          <line x1="120" y1="80"  x2="300" y2="100" stroke="rgba(232,130,74,.08)" stroke-width=".5"/>
+          <line x1="300" y1="100" x2="340" y2="260" stroke="rgba(232,130,74,.08)" stroke-width=".5"/>
+          <line x1="80"  y1="290" x2="180" y2="340" stroke="rgba(232,130,74,.08)" stroke-width=".5"/>
+          <line x1="120" y1="80"  x2="80"  y2="290" stroke="rgba(232,130,74,.06)" stroke-width=".5"/>
+          <!-- Small scattered stars -->
+          <circle cx="60"  cy="50"  r="1.5" fill="rgba(245,237,224,.2)"/>
+          <circle cx="360" cy="40"  r="1"   fill="rgba(245,237,224,.15)"/>
+          <circle cx="380" cy="340" r="1.5" fill="rgba(245,237,224,.2)"/>
+          <circle cx="30"  cy="360" r="1"   fill="rgba(245,237,224,.15)"/>
+          <circle cx="210" cy="30"  r="1"   fill="rgba(245,237,224,.2)"/>
+          <circle cx="370" cy="180" r="1.5" fill="rgba(245,237,224,.15)"/>
+          <circle cx="20"  cy="200" r="1"   fill="rgba(245,237,224,.2)"/>
+          <!-- Guest nodes -->
+          <g class="star-node" data-guest="0" style="cursor:none">
+            <circle cx="200" cy="200" r="22" fill="rgba(232,130,74,.15)" stroke="rgba(232,130,74,.4)" stroke-width="1" filter="url(#glow)"/>
+            <circle cx="200" cy="200" r="10" fill="var(--amber)"/>
+            <text x="200" y="236" fill="rgba(245,237,224,.6)" font-size="9" font-family="Syne,sans-serif" text-anchor="middle">Dr. Hassan</text>
+          </g>
+          <g class="star-node" data-guest="1" style="cursor:none">
+            <circle cx="120" cy="80"  r="16" fill="rgba(74,196,168,.12)" stroke="rgba(74,196,168,.35)" stroke-width="1"/>
+            <circle cx="120" cy="80"  r="7"  fill="var(--teal)"/>
+            <text x="120" y="56" fill="rgba(245,237,224,.5)" font-size="9" font-family="Syne,sans-serif" text-anchor="middle">M. Andersen</text>
+          </g>
+          <g class="star-node" data-guest="2" style="cursor:none">
+            <circle cx="300" cy="100" r="18" fill="rgba(196,149,106,.12)" stroke="rgba(196,149,106,.35)" stroke-width="1"/>
+            <circle cx="300" cy="100" r="8"  fill="var(--rose)"/>
+            <text x="300" y="76" fill="rgba(245,237,224,.5)" font-size="9" font-family="Syne,sans-serif" text-anchor="middle">Prof. Tanaka</text>
+          </g>
+          <g class="star-node" data-guest="3" style="cursor:none">
+            <circle cx="340" cy="260" r="14" fill="rgba(232,130,74,.1)" stroke="rgba(232,130,74,.3)" stroke-width="1"/>
+            <circle cx="340" cy="260" r="6"  fill="var(--amber)"/>
+            <text x="340" y="284" fill="rgba(245,237,224,.5)" font-size="9" font-family="Syne,sans-serif" text-anchor="middle">Z. Okonkwo</text>
+          </g>
+          <g class="star-node" data-guest="4" style="cursor:none">
+            <circle cx="80"  cy="290" r="15" fill="rgba(160,184,120,.1)" stroke="rgba(160,184,120,.3)" stroke-width="1"/>
+            <circle cx="80"  cy="290" r="7"  fill="#A0B878"/>
+            <text x="80" y="314" fill="rgba(245,237,224,.5)" font-size="9" font-family="Syne,sans-serif" text-anchor="middle">J. Okello</text>
+          </g>
+          <g class="star-node" data-guest="5" style="cursor:none">
+            <circle cx="180" cy="340" r="13" fill="rgba(74,196,168,.1)" stroke="rgba(74,196,168,.3)" stroke-width="1"/>
+            <circle cx="180" cy="340" r="6"  fill="var(--teal)"/>
+            <text x="180" y="364" fill="rgba(245,237,224,.5)" font-size="9" font-family="Syne,sans-serif" text-anchor="middle">A. Nwosu</text>
+          </g>
+        </svg>
+      </div>
+      <!-- Guest list -->
+      <div class="const-right reveal" style="transition-delay:.12s">
+        <h2 class="const-title">Minds That<br><em>Move the World</em></h2>
+        <p class="const-sub">We seek out the people doing the actual work — not the thought leaders, but the practitioners, the builders, the questioners.</p>
+        <div class="guest-list">
+          <div class="guest-row">
+            <div class="guest-row-av" style="background:linear-gradient(135deg,#E8824A,#C4956A)">LH</div>
+            <div class="guest-row-info">
+              <div class="guest-row-name">Dr. Leila Hassan</div>
+              <div class="guest-row-ep">EP.047 · AI Ethics Lead, DeepMind</div>
+            </div>
+            <span class="guest-eps-count">1 ep</span>
+          </div>
+          <div class="guest-row">
+            <div class="guest-row-av" style="background:linear-gradient(135deg,#4AC4A8,#2A9480)">MA</div>
+            <div class="guest-row-info">
+              <div class="guest-row-name">Mia Andersen</div>
+              <div class="guest-row-ep">EP.045 · Founder, NomadStack</div>
+            </div>
+            <span class="guest-eps-count">2 eps</span>
+          </div>
+          <div class="guest-row">
+            <div class="guest-row-av" style="background:linear-gradient(135deg,#C4956A,#A07050)">YT</div>
+            <div class="guest-row-info">
+              <div class="guest-row-name">Prof. Yuki Tanaka</div>
+              <div class="guest-row-ep">EP.044 · Cognitive Neuroscientist</div>
+            </div>
+            <span class="guest-eps-count">1 ep</span>
+          </div>
+          <div class="guest-row">
+            <div class="guest-row-av" style="background:linear-gradient(135deg,#A0B878,#788860)">AN</div>
+            <div class="guest-row-info">
+              <div class="guest-row-name">Chef Adaora Nwosu</div>
+              <div class="guest-row-ep">EP.043 · 3-Star Chef, Lagos & Paris</div>
+            </div>
+            <span class="guest-eps-count">1 ep</span>
+          </div>
+          <div class="guest-row">
+            <div class="guest-row-av" style="background:linear-gradient(135deg,#E8824A,#4AC4A8)">ZO</div>
+            <div class="guest-row-info">
+              <div class="guest-row-name">Zara Okonkwo</div>
+              <div class="guest-row-ep">EP.042 · Urban Designer, UN Habitat</div>
+            </div>
+            <span class="guest-eps-count">1 ep</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ CTA ════════════ -->
+<section class="cta-section" id="about">
+  <div class="cta-inner reveal">
+    <div class="sec-ey" style="justify-content:center;margin-bottom:1rem">Never Miss an Episode</div>
+    <h2 class="cta-title">Get It in Your<br><em>Ears First</em></h2>
+    <p class="cta-sub">New episodes land every Tuesday. Subscribe for early access, behind-the-scenes notes, and the occasional voice message from our guests.</p>
+    <div class="cta-form">
+      <input class="cta-input" type="email" placeholder="your@email.com">
+      <button class="cta-submit" onclick="this.textContent='✓ Subscribed'">Subscribe</button>
+    </div>
+    <p class="cta-note">No spam. Unsubscribe any time. We hate bad emails too.</p>
+    <div class="platforms">
+      <span class="plat-label">Listen on</span>
+      <a href="#" class="plat-link">🎙 Spotify</a>
+      <a href="#" class="plat-link">🎵 Apple</a>
+      <a href="#" class="plat-link">📻 Google</a>
+      <a href="#" class="plat-link">📡 RSS</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ FOOTER ════════════ -->
+<footer>
+  <div class="foot-inner">
+    <div>
+      <div class="foot-brand-name">The <span>Frequency</span></div>
+      <p class="foot-desc">A podcast about ideas worth hearing. New episodes every Tuesday. Made with curiosity and terrible coffee.</p>
+    </div>
+    <div>
+      <div class="foot-col-h">Episodes</div>
+      <ul class="foot-links">
+        <li><a href="#">All Episodes</a></li>
+        <li><a href="#">By Guest</a></li>
+        <li><a href="#">By Mood</a></li>
+        <li><a href="#">Season 1</a></li>
+        <li><a href="#">Season 2</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="foot-col-h">Connect</div>
+      <ul class="foot-links">
+        <li><a href="#">Twitter / X</a></li>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">Newsletter</a></li>
+        <li><a href="#">Discord</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="foot-col-h">More</div>
+      <ul class="foot-links">
+        <li><a href="#">About the Show</a></li>
+        <li><a href="#">Guest Inquiries</a></li>
+        <li><a href="#">Sponsor Us</a></li>
+        <li><a href="#">Press Kit</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span class="foot-copy">© 2026 The Frequency. All rights reserved.</span>
+    <span class="foot-copy">Made with 🎙 and too much caffeine.</span>
+  </div>
+</footer>
+
+<!-- ════════════ PERSISTENT PLAYER ════════════ -->
+<div id="player">
+  <div class="player-ep">
+    <div class="player-disk"><div class="disk-hole"></div></div>
+    <div>
+      <div class="player-ep-name">EP.047 · The Algorithm That Reads Your Mind</div>
+      <div class="player-ep-guest">Dr. Leila Hassan</div>
+    </div>
+  </div>
+  <div class="player-wave" id="playerWave"></div>
+  <div class="player-progress">
+    <span class="player-time">23:14</span>
+    <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+    <span class="player-time">62:00</span>
+  </div>
+  <div class="player-controls">
+    <button class="ctrl-btn" title="Rewind 15s">↺</button>
+    <button class="ctrl-play" id="playBtn" onclick="togglePlay()">
+      <div class="cover-tri" style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:9px solid var(--bg);margin-left:2px"></div>
+    </button>
+    <button class="ctrl-btn" title="Forward 15s">↻</button>
+  </div>
+  <button class="player-close" onclick="hidePlayer()" title="Close">✕</button>
+</div>
+
+<script>
+/* ══════════════════════
+   CURSOR
+══════════════════════ */
+const cur = document.getElementById('cur');
+const trail = document.getElementById('cur-trail');
+let cx = 0, cy = 0;
+document.addEventListener('mousemove', e => {
+  cx = e.clientX; cy = e.clientY;
+  cur.style.left = cx + 'px'; cur.style.top = cy + 'px';
+  trail.style.left = cx + 'px'; trail.style.top = cy + 'px';
+});
+document.querySelectorAll('button,a,.ep-card,.guest-row,.star-node,.cover-center').forEach(el => {
+  el.addEventListener('mouseenter', () => cur.classList.add('big'));
+  el.addEventListener('mouseleave', () => cur.classList.remove('big'));
+});
+
+/* ══════════════════════
+   HERO WAVEFORM — reacts to mouse X
+══════════════════════ */
+const heroWave = document.getElementById('heroWave');
+const BAR_COUNT = 80;
+let mouseX = 0.5;
+
+for (let i = 0; i < BAR_COUNT; i++) {
+  const b = document.createElement('div');
+  b.className = 'hw-bar';
+  b.style.animationDelay = (i * 0.025) + 's';
+  heroWave.appendChild(b);
+}
+
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX / window.innerWidth;
+});
+
+function animHeroWave() {
+  const bars = heroWave.querySelectorAll('.hw-bar');
+  const t = Date.now() / 800;
+  bars.forEach((b, i) => {
+    const pos = i / BAR_COUNT;
+    const dist = Math.abs(pos - mouseX);
+    const wave = Math.sin(t + i * 0.3) * 0.5 + 0.5;
+    const mouseFactor = Math.max(0, 1 - dist * 3);
+    const h = 8 + wave * 60 + mouseFactor * 100;
+    b.style.height = h + 'px';
+    b.style.opacity = 0.1 + mouseFactor * 0.5 + wave * 0.15;
+  });
+  requestAnimationFrame(animHeroWave);
+}
+animHeroWave();
+
+/* ══════════════════════
+   EP WAVEFORM (cover art bottom)
+══════════════════════ */
+const epWave = document.getElementById('epWave');
+for (let i = 0; i < 60; i++) {
+  const b = document.createElement('div');
+  b.className = 'epw-bar';
+  const h = 10 + Math.random() * 30;
+  b.style.height = h + 'px';
+  b.style.animationDuration = (0.8 + Math.random() * 1.4) + 's';
+  b.style.animationDelay = (Math.random() * 1.5) + 's';
+  epWave.appendChild(b);
+}
+
+/* ══════════════════════
+   EPISODE CARD LINE BARS
+══════════════════════ */
+for (let c = 0; c < 6; c++) {
+  const container = document.getElementById('ecl' + c);
+  if (!container) continue;
+  const colors = ['var(--amber)','var(--teal)','var(--rose)','var(--teal)','var(--amber)','#A0B878'];
+  for (let i = 0; i < 30; i++) {
+    const b = document.createElement('div');
+    b.className = 'ecl-bar';
+    b.style.height = (20 + Math.random() * 80) + '%';
+    b.style.background = colors[c];
+    b.style.opacity = '.3';
+    container.appendChild(b);
+  }
+}
+
+/* ══════════════════════
+   PLAYER WAVE BARS
+══════════════════════ */
+const playerWave = document.getElementById('playerWave');
+for (let i = 0; i < 60; i++) {
+  const b = document.createElement('div');
+  b.className = 'pw-bar';
+  b.style.height = (20 + Math.random() * 80) + '%';
+  b.style.animationDuration = (.6 + Math.random() * 1.2) + 's';
+  b.style.animationDelay = (Math.random() * 1.5) + 's';
+  playerWave.appendChild(b);
+}
+
+/* ══════════════════════
+   NAV / MOBILE MENU
+══════════════════════ */
+const ham = document.getElementById('navHam');
+const mob = document.getElementById('mobMenu');
+ham.addEventListener('click', () => {
+  mob.classList.toggle('open');
+  const s = ham.querySelectorAll('span');
+  if (mob.classList.contains('open')) {
+    s[0].style.cssText = 'transform:rotate(45deg) translate(4px,4.5px)';
+    s[1].style.cssText = 'opacity:0';
+    s[2].style.cssText = 'transform:rotate(-45deg) translate(4px,-4.5px)';
+  } else { s.forEach(x => x.style.cssText = ''); }
+});
+mob.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  mob.classList.remove('open');
+  ham.querySelectorAll('span').forEach(s => s.style.cssText = '');
+}));
+
+/* ══════════════════════
+   SCROLL REVEAL
+══════════════════════ */
+const reveals = document.querySelectorAll('.reveal');
+const ro = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); } });
+}, { threshold: .07, rootMargin: '0px 0px -30px 0px' });
+reveals.forEach(el => ro.observe(el));
+
+/* ══════════════════════
+   COUNTERS
+══════════════════════ */
+function countTo(id, target, dur = 1800, suffix = '') {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const t0 = performance.now();
+  const isFloat = target % 1 !== 0;
+  function tick(now) {
+    const p = Math.min((now - t0) / dur, 1);
+    const v = 1 - Math.pow(1 - p, 3);
+    el.textContent = isFloat ? (v * target).toFixed(1) + suffix : Math.round(v * target).toLocaleString() + suffix;
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+setTimeout(() => {
+  countTo('hc1', 84000);
+  countTo('hc2', 47);
+  countTo('hc3', 112);
+  countTo('hc4', 4.9);
+}, 500);
+
+/* ══════════════════════
+   MOOD FILTER
+══════════════════════ */
+function setMood(btn, mood) {
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.ep-card').forEach(card => {
+    const show = mood === 'all' || card.dataset.mood === mood;
+    card.style.transition = 'opacity .35s, transform .35s';
+    card.style.opacity = show ? '1' : '.2';
+    card.style.transform = show ? '' : 'scale(.97)';
+    card.style.pointerEvents = show ? 'auto' : 'none';
+  });
+}
+
+/* ══════════════════════
+   PLAYER
+══════════════════════ */
+const player = document.getElementById('player');
+let playing = false;
+let progress = 35;
+let progInterval;
+
+function showPlayer() {
+  player.classList.add('show');
+  if (!playing) togglePlay();
+}
+function hidePlayer() {
+  player.classList.remove('show');
+  playing = false;
+  player.classList.remove('playing');
+  clearInterval(progInterval);
+}
+function togglePlay() {
+  playing = !playing;
+  player.classList.toggle('playing', playing);
+  const btn = document.getElementById('playBtn');
+  if (playing) {
+    btn.innerHTML = '<span style="display:flex;gap:3px;align-items:center"><span style="width:3px;height:14px;background:var(--bg);border-radius:2px"></span><span style="width:3px;height:14px;background:var(--bg);border-radius:2px"></span></span>';
+    progInterval = setInterval(() => {
+      progress = Math.min(progress + 0.05, 100);
+      document.getElementById('progFill').style.width = progress + '%';
+    }, 500);
+  } else {
+    btn.innerHTML = '<div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:9px solid var(--bg);margin-left:2px"></div>';
+    clearInterval(progInterval);
+  }
+}
+
+/* ══════════════════════
+   STAR MAP HOVER
+══════════════════════ */
+document.querySelectorAll('.star-node').forEach(node => {
+  node.addEventListener('mouseenter', () => {
+    node.querySelector('circle:last-of-type').style.transform = 'scale(1.4)';
+    node.querySelector('circle:last-of-type').style.transformOrigin = 'center';
+    node.querySelector('circle:last-of-type').style.transition = 'transform .2s';
+  });
+  node.addEventListener('mouseleave', () => {
+    node.querySelector('circle:last-of-type').style.transform = '';
+  });
+});
+</script>
+</body>
+</html>
